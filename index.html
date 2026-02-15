@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Williams Store - Tu Tienda de Confianza</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header con navegación -->
+    <header class="header">
+        <div class="container">
+            <div class="logo" onclick="irAInicio()">
+                <i class="fas fa-store"></i>
+                <span>Williams Store</span>
+            </div>
+            <nav class="nav">
+                <a href="#" onclick="irAInicio()">Inicio</a>
+                <a href="#" onclick="mostrarDepartamentos()">Departamentos</a>
+                <a href="#" onclick="mostrarOfertas()">Ofertas</a>
+            </nav>
+            <div class="cart-icon" onclick="toggleCarrito()">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECCIÓN: Hero + Conócenos (SE VE AL INICIO) -->
+    <section class="hero-conocenos-unified" id="seccionInicio">
+        <!-- Hero Banner -->
+        <div class="hero-banner">
+            <div class="hero-content">
+                <h1>¡Bienvenido a Williams Store! ❤️</h1>
+                <p>Calidad, variedad y los mejores precios en un solo lugar.</p>
+                <button class="btn-scroll" onclick="mostrarDepartamentos()">
+                    <i class="fas fa-shopping-bag"></i> Explorar Productos
+                </button>
+            </div>
+        </div>
+
+        <!-- Conócenos integrado -->
+        <div class="conocenos-content-unified">
+            <div class="container">
+                <h2 class="section-title-small">Store 🌹.</h2>
+                
+                <div class="conocenos-grid">
+                    <div class="conocenos-texto">
+                        <h3>¿Quiénes somos?</h3>
+                        <p>
+                            <strong>Williams Store</strong> es tu tienda de confianza desde 2026, dedicada a ofrecerte 
+                            los mejores productos en múltiples departamentos. Nuestro compromiso es brindarte calidad, 
+                            variedad y precios competitivos en cada compra que realices con nosotros.
+                        </p>
+                        
+                        <h3>¿Por qué comprar aquí?</h3>
+                        <div class="ventajas-lista">
+                            <div class="ventaja-box">
+                                <i class="fas fa-shield-alt"></i>
+                                <div>
+                                    <h4>Productos de Calidad</h4>
+                                    <p>Artículos cuidadosamente seleccionados.</p>
+                                </div>
+                            </div>
+                            <div class="ventaja-box">
+                                <i class="fas fa-tags"></i>
+                                <div>
+                                    <h4>Mejores Precios</h4>
+                                    <p>Precios competitivos todo el año.</p>
+                                </div>
+                            </div>
+                            <div class="ventaja-box">
+                                <i class="fas fa-shipping-fast"></i>
+                                <div>
+                                    <h4>Entrega Rápida</h4>
+                                    <p>Envíos rápidos y seguros.</p>
+                                </div>
+                            </div>
+                            <div class="ventaja-box">
+                                <i class="fas fa-headset"></i>
+                                <div>
+                                    <h4>Atención Personalizada</h4>
+                                    <p>Estamos para ayudarte siempre.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="conocenos-imagen-card">
+                        <img src="https://images.unsplash.com/photo-1763872011479-aa293bf083a8?w=800&q=90" alt="Williams Store">
+                        <div class="stats-badges">
+                            <div class="stat-badge">
+                                <span class="stat-num">6</span>
+                                <span class="stat-lbl">Departamentos</span>
+                            </div>
+                            <div class="stat-badge">
+                                <span class="stat-num">500+</span>
+                                <span class="stat-lbl">Productos</span>
+                            </div>
+                            <div class="stat-badge">
+                                <span class="stat-num">100%</span>
+                                <span class="stat-lbl">Satisfacción</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: Departamentos (OCULTA AL INICIO) -->
+    <section class="departamentos-section" id="seccionDepartamentos" style="display: none;">
+        <div class="container">
+            <div class="breadcrumb-nav">
+                <button class="btn-nav" onclick="irAInicio()">
+                    <i class="fas fa-home"></i> Volver al Inicio 🔙
+                </button>
+            </div>
+            
+            <h2 class="section-title">Departamentos</h2>
+            <p class="section-subtitle">Explora nuestra amplia variedad de productos organizados por categorías.</p>
+            
+            <div class="departamentos-grid">
+                <!-- Electrónica -->
+                <div class="departamento-card" onclick="abrirDepartamento('electronica')">
+                    <div class="departamento-imagen">
+                        <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?w=500&q=80" alt="Electrónica">
+                    </div>
+                    <div class="departamento-info">
+                        <h3>Dispositivos Electrónicos 💻</h3>
+                        <p>Computadoras, celulares y accesorios tecnológicos de última generación.</p>
+                        <span class="badge">150+ productos</span>
+                    </div>
+                </div>
+
+                <!-- Ropa -->
+                <div class="departamento-card" onclick="abrirDepartamento('ropa')">
+                    <div class="departamento-imagen">
+                        <img src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=500&q=80" alt="Ropa">
+                    </div>
+                    <div class="departamento-info">
+                        <h3>Ropa 👕</h3>
+                        <p>Moda actual para toda la familia con las mejores marcas del mercado.</p>
+                        <span class="badge">300+ productos</span>
+                    </div>
+                </div>
+
+                <!-- Hogar -->
+                <div class="departamento-card" onclick="abrirDepartamento('hogar')">
+                    <div class="departamento-imagen">
+                        <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=500&q=80" alt="Hogar">
+                    </div>
+                    <div class="departamento-info">
+                        <h3>Hogar 🏠</h3>
+                        <p>Muebles y artículos de decoración para crear espacios únicos.</p>
+                        <span class="badge">200+ productos</span>
+                    </div>
+                </div>
+
+                <!-- Deportes -->
+                <div class="departamento-card" onclick="abrirDepartamento('deportes')">
+                    <div class="departamento-imagen">
+                        <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=500&q=80" alt="Deportes">
+                    </div>
+                    <div class="departamento-info">
+                        <h3>Deportes ⚾</h3>
+                        <p>Equipamiento deportivo profesional para todos los niveles.</p>
+                        <span class="badge">180+ productos</span>
+                    </div>
+                </div>
+
+                <!-- Juguetes -->
+                <div class="departamento-card" onclick="abrirDepartamento('juguetes')">
+                    <div class="departamento-imagen">
+                        <img src="https://images.unsplash.com/photo-1598541264502-84dc6aa2fb87?w=500&q=80" alt="Juguetes">
+                    </div>
+                    <div class="departamento-info">
+                        <h3>Juguetes 🪁</h3>
+                        <p>Diversión garantizada para los más pequeños del hogar.</p>
+                        <span class="badge">250+ productos</span>
+                    </div>
+                </div>
+
+                <!-- Alimentos -->
+                <div class="departamento-card" onclick="abrirDepartamento('alimentos')">
+                    <div class="departamento-imagen">
+                        <img src="https://images.unsplash.com/photo-1543168256-418811576931?w=500&q=80" alt="Alimentos">
+                    </div>
+                    <div class="departamento-info">
+                        <h3>Alimentos 🥩</h3>
+                        <p>Productos frescos y de calidad para tu mesa todos los días.</p>
+                        <span class="badge">400+ productos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: Vista de Productos (OCULTA AL INICIO) -->
+    <section class="productos-section" id="seccionProductos" style="display: none;">
+        <div class="container">
+            <div class="breadcrumb-nav">
+                <button class="btn-nav" onclick="irAInicio()">
+                    <i class="fas fa-home"></i> Volver al Inicio 🔙
+                </button>
+                <button class="btn-nav btn-nav-secondary" onclick="mostrarDepartamentos()">
+                    <i class="fas fa-th-large"></i> Ver Otros Departamentos.
+                </button>
+            </div>
+            
+            <div class="breadcrumb-text">
+                <span id="breadcrumbText">Inicio / Departamento</span>
+            </div>
+            
+            <h2 class="section-title" id="departamentoTitulo">Productos</h2>
+            
+            <div class="productos-grid" id="productosGrid">
+                <!-- Los productos se cargarán dinámicamente aquí -->
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: Ofertas (OCULTA AL INICIO) -->
+    <section class="ofertas-section" id="seccionOfertas" style="display: none;">
+        <div class="container">
+            <div class="breadcrumb-nav-ofertas">
+                <button class="btn-nav-white" onclick="irAInicio()">
+                    <i class="fas fa-home"></i> Volver al Inicio 🔙
+                </button>
+            </div>
+            
+            <h2 class="section-title">Ofertas Especiales</h2>
+            <p class="section-subtitle-white">Aprovecha nuestras promociones exclusivas por tiempo limitado.</p>
+            <div class="ofertas-grid">
+                <div class="oferta-card">
+                    <div class="oferta-badge">-30%</div>
+                    <i class="fas fa-mobile-alt oferta-icon"></i>
+                    <h3>Smartphones</h3>
+                    <p>Hasta 30% de descuento en modelos seleccionados.</p>
+                    <button class="btn-ver-ofertas" onclick="irAProductosConDescuento('electronica')">
+                        <i class="fas fa-arrow-right"></i> Ver Ofertas.
+                    </button>
+                </div>
+                <div class="oferta-card">
+                    <div class="oferta-badge">-25%</div>
+                    <i class="fas fa-tv oferta-icon"></i>
+                    <h3>Smart TVs</h3>
+                    <p>Ofertas increíbles en tecnología para tu hogar.</p>
+                    <button class="btn-ver-ofertas" onclick="irAProductosConDescuento('electronica')">
+                        <i class="fas fa-arrow-right"></i> Ver Ofertas. 
+                    </button>
+                </div>
+                <div class="oferta-card">
+                    <div class="oferta-badge">-40%</div>
+                    <i class="fas fa-shoe-prints oferta-icon"></i>
+                    <h3>Calzados</h3>
+                    <p>Liquidación de temporada en calzado deportivo y casual.</p>
+                    <button class="btn-ver-ofertas" onclick="irAProductosConDescuento('ropa')">
+                        <i class="fas fa-arrow-right"></i> Ver Ofertas.
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carrito de Compras (Sidebar) -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Mi Carrito</h3>
+            <button class="cart-close" onclick="toggleCarrito()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Tu carrito está vacío.</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="btn-checkout">
+                <i class="fas fa-credit-card"></i> Proceder al Pago ✅
+            </button>
+        </div>
+    </div>
+
+    <!-- Overlay para el carrito -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCarrito()"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-store"></i> Williams Store</h4>
+                    <p>Tu tienda de confianza desde 2026.</p>
+                    <p class="developer-info">
+                        <strong>Desarrollador:</strong><br>
+                        José Eduardo Williams<br>
+                        <small>Matrícula: 23-EISN-2-048</small>
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contacto 📞</h4>
+                    <p><i class="fas fa-phone"></i> +1 (849) 380-3490</p>
+                    <p><i class="fas fa-envelope"></i> info@williamsstore.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> La Romana, Romana del Oeste Calle 15.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Williams Store. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
