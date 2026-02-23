@@ -68,34 +68,31 @@ const productosPorDepartamento = {
 
 // ========== INFORMACIÓN DE DEPARTAMENTOS ==========
 const infoDepartamentos = {
-    electronica: {
-        titulo: 'Electrónicos',
-        descripcion: 'Los mejores dispositivos y accesorios tecnológicos.'
-    },
-    ropa: {
-        titulo: 'Ropa y Moda',
-        descripcion: 'Estilo y comodidad para toda la familia.'
-    },
-    hogar: {
-        titulo: 'Hogar y Decoración',
-        descripcion: 'Todo para hacer tu casa más acogedora.'
-    },
-    deportes: {
-        titulo: 'Deportes y Fitness',
-        descripcion: 'Equipamiento para mantenerte activo y saludable.'
-    },
-    juguetes: {
-        titulo: 'Juguetes y Juegos',
-        descripcion: 'Diversión garantizada para los más pequeños.'
-    },
-    alimentos: {
-        titulo: 'Alimentos y Bebidas',
-        descripcion: 'Productos frescos y de calidad premium.'
-    }
+    electronica: { titulo: 'Electrónicos', descripcion: 'Los mejores dispositivos y accesorios tecnológicos.' },
+    ropa: { titulo: 'Ropa y Moda', descripcion: 'Estilo y comodidad para toda la familia.' },
+    hogar: { titulo: 'Hogar y Decoración', descripcion: 'Todo para hacer tu casa más acogedora.' },
+    deportes: { titulo: 'Deportes y Fitness', descripcion: 'Equipamiento para mantenerte activo y saludable.' },
+    juguetes: { titulo: 'Juguetes y Juegos', descripcion: 'Diversión garantizada para los más pequeños.' },
+    alimentos: { titulo: 'Alimentos y Bebidas', descripcion: 'Productos frescos y de calidad premium.' }
 };
 
 // ========== CARRITO DE COMPRAS ==========
 let carrito = [];
+
+// ========== MENÚ HAMBURGUESA (MOBILE) ==========
+function toggleMenu() {
+    const nav = document.getElementById('mainNav');
+    const btn = document.getElementById('hamburgerBtn');
+    nav.classList.toggle('menu-open');
+    btn.classList.toggle('active');
+}
+
+function cerrarMenu() {
+    const nav = document.getElementById('mainNav');
+    const btn = document.getElementById('hamburgerBtn');
+    nav.classList.remove('menu-open');
+    btn.classList.remove('active');
+}
 
 // ========== FUNCIONES DE NAVEGACIÓN ENTRE SECCIONES ==========
 function ocultarTodasLasSecciones() {
@@ -103,6 +100,8 @@ function ocultarTodasLasSecciones() {
     document.getElementById('seccionDepartamentos').style.display = 'none';
     document.getElementById('seccionProductos').style.display = 'none';
     document.getElementById('seccionOfertas').style.display = 'none';
+    document.getElementById('seccionAcercaDe').style.display = 'none';
+    document.getElementById('seccionHelp').style.display = 'none';
 }
 
 function irAInicio() {
@@ -123,15 +122,24 @@ function mostrarOfertas() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Función para ir directamente a productos con descuento de un departamento
+function mostrarAcercaDe() {
+    ocultarTodasLasSecciones();
+    document.getElementById('seccionAcercaDe').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function mostrarHelp() {
+    ocultarTodasLasSecciones();
+    document.getElementById('seccionHelp').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function irAProductosConDescuento(departamento) {
     ocultarTodasLasSecciones();
     document.getElementById('seccionProductos').style.display = 'block';
-    
     const info = infoDepartamentos[departamento];
     document.getElementById('breadcrumbText').textContent = `Inicio / ${info.titulo} / Ofertas`;
     document.getElementById('departamentoTitulo').textContent = `${info.titulo} - Ofertas Especiales`;
-    
     cargarProductos(departamento);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -139,11 +147,9 @@ function irAProductosConDescuento(departamento) {
 function abrirDepartamento(departamento) {
     ocultarTodasLasSecciones();
     document.getElementById('seccionProductos').style.display = 'block';
-    
     const info = infoDepartamentos[departamento];
     document.getElementById('breadcrumbText').textContent = `Inicio / ${info.titulo}`;
     document.getElementById('departamentoTitulo').textContent = info.titulo;
-    
     cargarProductos(departamento);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -152,31 +158,22 @@ function abrirDepartamento(departamento) {
 function cargarProductos(departamento) {
     const productosGrid = document.getElementById('productosGrid');
     const productos = productosPorDepartamento[departamento];
-    
     productosGrid.innerHTML = '';
-    
     productos.forEach(producto => {
         const card = document.createElement('div');
         card.className = 'producto-card';
-        
-        // Manejar imagen vacía
-        const imagenHTML = producto.imagen 
+        const imagenHTML = producto.imagen
             ? `<img src="${producto.imagen}" alt="${producto.nombre}" loading="lazy">`
             : `<div class="sin-imagen"><i class="fas fa-image"></i><p>Imagen próximamente</p></div>`;
-        
-        // Manejar descuento
-        const precioHTML = producto.descuento 
+        const precioHTML = producto.descuento
             ? `<div class="producto-precios">
                 <span class="precio-original">$${formatearPrecio(producto.precio)}</span>
                 <span class="precio-descuento">$${formatearPrecio(producto.descuento)}</span>
                 <span class="descuento-badge">-${Math.round((1 - producto.descuento / producto.precio) * 100)}%</span>
                </div>`
             : `<div class="producto-precio">$${formatearPrecio(producto.precio)}</div>`;
-        
         card.innerHTML = `
-            <div class="producto-imagen">
-                ${imagenHTML}
-            </div>
+            <div class="producto-imagen">${imagenHTML}</div>
             <div class="producto-info">
                 <h3>${producto.nombre}</h3>
                 <p>${producto.descripcion}</p>
@@ -196,48 +193,66 @@ function formatearPrecio(precio) {
 
 // ========== FUNCIONES DEL CARRITO ==========
 function agregarAlCarrito(productoId, departamento) {
-    const producto = productosPorDepartamento[departamento].find(p => p.id === productoId);
+    const id = parseInt(productoId);
+    const producto = productosPorDepartamento[departamento].find(p => parseInt(p.id) === id);
     if (!producto) return;
-    
-    const productoExistente = carrito.find(item => item.id === productoId);
-    // Usar precio con descuento si existe
+    const productoExistente = carrito.find(item => parseInt(item.id) === id);
     const precioFinal = producto.descuento || producto.precio;
-    
     if (productoExistente) {
         productoExistente.cantidad++;
     } else {
-        carrito.push({ ...producto, precio: precioFinal, cantidad: 1 });
+        carrito.push({ ...producto, id: id, precio: precioFinal, cantidad: 1 });
     }
-    
     actualizarCarrito();
     mostrarNotificacion('Producto agregado al carrito 🛒');
 }
 
-function eliminarDelCarrito(productoId) {
-    carrito = carrito.filter(item => item.id !== productoId);
+// ========== LÓGICA CARRITO: Disminuir cantidad (-1) o eliminar si llega a 0 ==========
+function disminuirCantidad(productoId) {
+    const id = parseInt(productoId);
+    const index = carrito.findIndex(i => parseInt(i.id) === id);
+    if (index === -1) return;
+    if (carrito[index].cantidad > 1) {
+        carrito[index].cantidad--;
+        mostrarNotificacion('Cantidad actualizada 🛒');
+    } else {
+        carrito.splice(index, 1);
+        mostrarNotificacion('Producto eliminado del carrito 🗑️');
+    }
     actualizarCarrito();
-    mostrarNotificacion('Producto eliminado del carrito 🛒');
+}
+
+function aumentarCantidad(productoId) {
+    const id = parseInt(productoId);
+    const index = carrito.findIndex(i => parseInt(i.id) === id);
+    if (index === -1) return;
+    carrito[index].cantidad++;
+    actualizarCarrito();
+    mostrarNotificacion('Cantidad actualizada 🛒');
+}
+
+function eliminarDelCarrito(productoId) {
+    const id = parseInt(productoId);
+    carrito = carrito.filter(item => parseInt(item.id) !== id);
+    actualizarCarrito();
+    mostrarNotificacion('Producto eliminado del carrito 🗑️');
 }
 
 function actualizarCarrito() {
     const cartItems = document.getElementById('cartItems');
     const cartCount = document.getElementById('cartCount');
     const cartTotal = document.getElementById('cartTotal');
-    
     const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
     cartCount.textContent = totalItems;
-    
     if (carrito.length === 0) {
         cartItems.innerHTML = `
             <div class="cart-empty">
                 <i class="fas fa-shopping-cart"></i>
                 <p>Tu 🛒 está vacío.</p>
-            </div>
-        `;
+            </div>`;
         cartTotal.textContent = '$0.00';
         return;
     }
-    
     cartItems.innerHTML = carrito.map(item => `
         <div class="cart-item">
             <div class="cart-item-imagen">
@@ -245,14 +260,21 @@ function actualizarCarrito() {
             </div>
             <div class="cart-item-info">
                 <h4>${item.nombre}</h4>
-                <div class="cart-item-price">$${formatearPrecio(item.precio)} x ${item.cantidad}</div>
+                <div class="cart-item-price">$${formatearPrecio(item.precio)}</div>
+                <div class="cart-item-qty-controls">
+                    <button class="cart-qty-btn minus" onclick="disminuirCantidad(${item.id})" title="Quitar uno">−</button>
+                    <span class="cart-qty-display">${item.cantidad}</span>
+                    <button class="cart-qty-btn plus" onclick="aumentarCantidad(${item.id})" title="Agregar uno">+</button>
+                    <button class="cart-item-remove" onclick="eliminarDelCarrito(${item.id})" title="Eliminar todo" style="margin-left:0.3rem;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="cart-item-price" style="font-size:0.8rem; opacity:0.7; margin-top:0.3rem;">
+                    Subtotal: $${formatearPrecio(item.precio * item.cantidad)}
+                </div>
             </div>
-            <button class="cart-item-remove" onclick="eliminarDelCarrito(${item.id})">
-                <i class="fas fa-trash"></i>
-            </button>
         </div>
     `).join('');
-    
     const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
     cartTotal.textContent = `$${formatearPrecio(total)}`;
 }
@@ -264,9 +286,53 @@ function toggleCarrito() {
     cartOverlay.classList.toggle('active');
 }
 
+// ========== HELP: ENVIAR FORMULARIO ==========
+function enviarHelp() {
+    const nombre = document.getElementById('helpNombre').value.trim();
+    const email = document.getElementById('helpEmail').value.trim();
+    const asunto = document.getElementById('helpAsunto').value;
+    const mensaje = document.getElementById('helpMensaje').value.trim();
+
+    if (!nombre) { mostrarNotificacion('⚠️ Por favor ingresa tu nombre.'); return; }
+    if (!email || !email.includes('@')) { mostrarNotificacion('⚠️ Por favor ingresa un correo válido.'); return; }
+    if (!asunto) { mostrarNotificacion('⚠️ Por favor selecciona un asunto.'); return; }
+    if (!mensaje) { mostrarNotificacion('⚠️ Por favor describe tu problemática.'); return; }
+
+    // Construir el mailto
+    const destinatario = 'williamsjoseeduardo@gmail.com';
+    const subjectEncoded = encodeURIComponent(`[Williams Store Help] ${asunto} - De: ${nombre}`);
+    const bodyEncoded = encodeURIComponent(
+        `Nombre: ${nombre}\nCorreo del usuario: ${email}\nAsunto: ${asunto}\n\nMensaje:\n${mensaje}\n\n---\nEnviado desde Williams Store - Centro de Ayuda`
+    );
+    const mailtoLink = `mailto:${destinatario}?subject=${subjectEncoded}&body=${bodyEncoded}`;
+
+    // Abrir cliente de correo
+    window.location.href = mailtoLink;
+
+    // Mostrar mensaje de éxito
+    setTimeout(() => {
+        document.getElementById('helpForm').style.display = 'none';
+        document.getElementById('helpSuccess').style.display = 'block';
+    }, 600);
+}
+
+function nuevoMensajeHelp() {
+    document.getElementById('helpNombre').value = '';
+    document.getElementById('helpEmail').value = '';
+    document.getElementById('helpAsunto').value = '';
+    document.getElementById('helpMensaje').value = '';
+    document.getElementById('helpSuccess').style.display = 'none';
+    document.getElementById('helpForm').style.display = 'block';
+}
+
 // ========== NOTIFICACIONES ==========
 function mostrarNotificacion(mensaje) {
+    // Eliminar notificación existente si la hay
+    const existente = document.querySelector('.notificacion-toast');
+    if (existente) existente.remove();
+
     const notificacion = document.createElement('div');
+    notificacion.className = 'notificacion-toast';
     notificacion.style.cssText = `
         position: fixed;
         top: 100px;
@@ -275,16 +341,17 @@ function mostrarNotificacion(mensaje) {
         color: white;
         padding: 1rem 1.5rem;
         border-radius: 10px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         z-index: 10000;
         animation: slideInRight 0.3s ease;
         font-weight: 600;
+        max-width: 300px;
     `;
     notificacion.innerHTML = `<i class="fas fa-check-circle"></i> ${mensaje}`;
     document.body.appendChild(notificacion);
     setTimeout(() => {
         notificacion.style.animation = 'slideOutRight 0.3s ease';
-        setTimeout(() => document.body.removeChild(notificacion), 300);
+        setTimeout(() => { if (notificacion.parentNode) notificacion.remove(); }, 300);
     }, 3000);
 }
 
@@ -307,10 +374,9 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🛍️ Williams Store iniciada correctamente');
     console.log('👨‍💻 Desarrollador: José Eduardo Williams');
     console.log('🎓 Matrícula: 23-EISN-2-048');
-    console.log('📸 Usando imágenes de Unsplash');
-    
+
     document.getElementById('cartOverlay').addEventListener('click', toggleCarrito);
-    
+
     document.querySelector('.btn-checkout').addEventListener('click', function() {
         if (carrito.length === 0) {
             mostrarNotificacion('Tu 🛒 está vacío.');

@@ -15,15 +15,22 @@
                 <i class="fas fa-store"></i>
                 <span>Williams Store</span>
             </div>
-            <nav class="nav">
-                <a href="#" onclick="irAInicio()">Inicio</a>
-                <a href="#" onclick="mostrarDepartamentos()">Departamentos</a>
-                <a href="#" onclick="mostrarOfertas()">Ofertas</a>
+            <nav class="nav" id="mainNav">
+                <a href="#" onclick="irAInicio(); cerrarMenu()">Inicio</a>
+                <a href="#" onclick="mostrarDepartamentos(); cerrarMenu()">Departamentos</a>
+                <a href="#" onclick="mostrarOfertas(); cerrarMenu()">Ofertas</a>
+                <a href="#" onclick="mostrarAcercaDe(); cerrarMenu()">Acerca de</a>
+                <a href="#" onclick="mostrarHelp(); cerrarMenu()" class="nav-help"><i class="fas fa-headset"></i> <span>Help</span></a>
             </nav>
+            <div class="header-right">
+            <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menú">
+                <span></span><span></span><span></span>
+            </button>
             <div class="cart-icon" onclick="toggleCarrito()">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count" id="cartCount">0</span>
             </div>
+            </div><!-- /header-right -->
         </div>
     </header>
 
@@ -35,7 +42,7 @@
                 <h1>¡Bienvenido a Williams Store! ❤️</h1>
                 <p>Calidad, variedad y los mejores precios en un solo lugar.</p>
                 <button class="btn-scroll" onclick="mostrarDepartamentos()">
-                    <i class="fas fa-shopping-bag"></i> Explorar Productos
+                    <i class="fas fa-shopping-bag"></i> Ver Productos
                 </button>
             </div>
         </div>
@@ -114,7 +121,7 @@
         <div class="container">
             <div class="breadcrumb-nav">
                 <button class="btn-nav" onclick="irAInicio()">
-                    <i class="fas fa-home"></i> Volver al Inicio 🔙
+                    <i class="fas fa-home"></i> Inicio 🔙
                 </button>
             </div>
             
@@ -202,10 +209,10 @@
         <div class="container">
             <div class="breadcrumb-nav">
                 <button class="btn-nav" onclick="irAInicio()">
-                    <i class="fas fa-home"></i> Volver al Inicio 🔙
+                    <i class="fas fa-home"></i> Inicio 🔙
                 </button>
                 <button class="btn-nav btn-nav-secondary" onclick="mostrarDepartamentos()">
-                    <i class="fas fa-th-large"></i> Ver Otros Departamentos.
+                    <i class="fas fa-th-large"></i> Otros Departamentos
                 </button>
             </div>
             
@@ -226,7 +233,7 @@
         <div class="container">
             <div class="breadcrumb-nav-ofertas">
                 <button class="btn-nav-white" onclick="irAInicio()">
-                    <i class="fas fa-home"></i> Volver al Inicio 🔙
+                    <i class="fas fa-home"></i> Inicio 🔙
                 </button>
             </div>
             
@@ -264,6 +271,218 @@
         </div>
     </section>
 
+    <!-- ======== SECCIÓN: Acerca de (NUEVA) ======== -->
+    <section class="acerca-section" id="seccionAcercaDe" style="display: none;">
+        <div class="acerca-hero">
+            <div class="acerca-hero-bg"></div>
+            <div class="container acerca-hero-content">
+                <div class="acerca-tag">Conoce nuestra historia</div>
+                <h1 class="acerca-hero-title">Acerca de<br><span>Williams Store</span></h1>
+                <p class="acerca-hero-sub">Pasión por la calidad. Compromiso con el cliente. Nacidos en 2026.</p>
+            </div>
+        </div>
+
+        <div class="container acerca-body">
+            <div class="breadcrumb-nav" style="margin-bottom:2rem;">
+                <button class="btn-nav" onclick="irAInicio()">
+                    <i class="fas fa-home"></i> Inicio 🔙
+                </button>
+            </div>
+
+            <!-- Misión / Visión / Valores -->
+            <div class="acerca-mvv-grid">
+                <div class="acerca-mvv-card acerca-mision">
+                    <div class="acerca-mvv-icon"><i class="fas fa-bullseye"></i></div>
+                    <h3>Misión</h3>
+                    <p>Ofrecer a cada cliente una experiencia de compra excepcional, con productos de calidad garantizada y un servicio personalizado que supere sus expectativas en cada visita.</p>
+                </div>
+                <div class="acerca-mvv-card acerca-vision">
+                    <div class="acerca-mvv-icon"><i class="fas fa-eye"></i></div>
+                    <h3>Visión</h3>
+                    <p>Convertirnos en la tienda de referencia en la región, expandiendo nuestros departamentos y llevando la mejor selección de productos a más hogares dominicanos.</p>
+                </div>
+                <div class="acerca-mvv-card acerca-valores">
+                    <div class="acerca-mvv-icon"><i class="fas fa-heart"></i></div>
+                    <h3>Valores</h3>
+                    <p>Honestidad, calidad, innovación y compromiso. Creemos que cada cliente merece lo mejor, y eso guía cada decisión que tomamos en Williams Store.</p>
+                </div>
+            </div>
+
+            <!-- Sección del Desarrollador -->
+            <div class="desarrollador-section">
+                <div class="desarrollador-card">
+                    <div class="desarrollador-avatar">
+                        <div class="avatar-ring">
+                            <div class="avatar-inner">
+                                <i class="fas fa-code"></i>
+                            </div>
+                        </div>
+                        <div class="dev-status-dot"></div>
+                    </div>
+                    <div class="desarrollador-info">
+                        <div class="dev-label">Desarrollador Principal</div>
+                        <h2 class="dev-nombre">José Eduardo Williams</h2>
+                        <div class="dev-matricula">
+                            <i class="fas fa-id-card"></i>
+                            <span>Matrícula: <strong>23-EISN-2-048</strong></span>
+                        </div>
+                        <p class="dev-bio">
+                            Estudiante apasionado por el desarrollo web y la creación de experiencias digitales que conectan marcas con personas. Williams Store es un proyecto académico que refleja dedicación, aprendizaje y amor por el código limpio.
+                        </p>
+                        <div class="dev-skills">
+                            <span class="dev-skill">HTML5</span>
+                            <span class="dev-skill">CSS3</span>
+                            <span class="dev-skill">JavaScript</span>
+                            <span class="dev-skill">UI/UX</span>
+                            <span class="dev-skill">Diseño Web</span>
+                        </div>
+                        <div class="dev-contacto">
+                            <a href="mailto:williamsjoseeduardo@gmail.com" class="dev-contact-btn">
+                                <i class="fas fa-envelope"></i> williamsjoseeduardo@gmail.com
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats decorativos -->
+                <div class="acerca-stats-row">
+                    <div class="acerca-stat">
+                        <span class="acerca-stat-num">6</span>
+                        <span class="acerca-stat-lbl">Departamentos</span>
+                    </div>
+                    <div class="acerca-stat-divider"></div>
+                    <div class="acerca-stat">
+                        <span class="acerca-stat-num">500+</span>
+                        <span class="acerca-stat-lbl">Productos listados</span>
+                    </div>
+                    <div class="acerca-stat-divider"></div>
+                    <div class="acerca-stat">
+                        <span class="acerca-stat-num">2026</span>
+                        <span class="acerca-stat-lbl">Año de fundación</span>
+                    </div>
+                    <div class="acerca-stat-divider"></div>
+                    <div class="acerca-stat">
+                        <span class="acerca-stat-num">100%</span>
+                        <span class="acerca-stat-lbl">Compromiso</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======== SECCIÓN: Help (NUEVA) ======== -->
+    <section class="help-section" id="seccionHelp" style="display: none;">
+        <div class="help-bg-decoration">
+            <div class="help-circle help-circle-1"></div>
+            <div class="help-circle help-circle-2"></div>
+            <div class="help-circle help-circle-3"></div>
+        </div>
+
+        <div class="container help-container">
+            <div class="breadcrumb-nav" style="margin-bottom:2rem; position:relative; z-index:2;">
+                <button class="btn-nav" onclick="irAInicio()">
+                    <i class="fas fa-home"></i> Inicio 🔙
+                </button>
+            </div>
+
+            <div class="help-layout">
+                <!-- Panel izquierdo: Info -->
+                <div class="help-info-panel">
+                    <div class="help-icon-wrap">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h2 class="help-title">Centro de<br><span>Ayuda</span></h2>
+                    <p class="help-subtitle">¿Tienes algún problema, duda o sugerencia? Cuéntanos y te responderemos a la brevedad posible.</p>
+
+                    <div class="help-info-items">
+                        <div class="help-info-item">
+                            <div class="help-info-icon"><i class="fas fa-envelope"></i></div>
+                            <div>
+                                <strong>Correo directo:</strong>
+                                <p>williamsjoseeduardo@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="help-info-item">
+                            <div class="help-info-icon"><i class="fas fa-phone"></i></div>
+                            <div>
+                                <strong>Teléfono:</strong>
+                                <p>+1 (849) 380-3490</p>
+                            </div>
+                        </div>
+                        <div class="help-info-item">
+                            <div class="help-info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <strong>Ubicación:</strong>
+                                <p>La Romana, Calle 15</p>
+                            </div>
+                        </div>
+                        <div class="help-info-item">
+                            <div class="help-info-icon"><i class="fas fa-clock"></i></div>
+                            <div>
+                                <strong>Tiempo de respuesta:</strong>
+                                <p>Menos de 24 horas hábiles</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel derecho: Formulario -->
+                <div class="help-form-panel">
+                    <div class="help-form-header">
+                        <h3>Envíanos tu mensaje 📧</h3>
+                        <p>Completa el formulario y lo recibiremos en nuestro correo.</p>
+                    </div>
+
+                    <div class="help-form" id="helpForm">
+                        <div class="help-form-row">
+                            <div class="help-field">
+                                <label for="helpNombre"><i class="fas fa-user"></i> Nombre completo</label>
+                                <input type="text" id="helpNombre" placeholder="Tu nombre..." autocomplete="off">
+                            </div>
+                            <div class="help-field">
+                                <label for="helpEmail"><i class="fas fa-envelope"></i> Correo electrónico</label>
+                                <input type="email" id="helpEmail" placeholder="tu@correo.com" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="help-field">
+                            <label for="helpAsunto"><i class="fas fa-tag"></i> Asunto</label>
+                            <select id="helpAsunto">
+                                <option value="">Selecciona un tema...</option>
+                                <option value="Problema con un pedido">Problema con un pedido</option>
+                                <option value="Consulta sobre productos">Consulta sobre productos</option>
+                                <option value="Problema técnico en la página">Problema técnico en la página</option>
+                                <option value="Solicitud de devolución">Solicitud de devolución</option>
+                                <option value="Sugerencia o mejora">Sugerencia o mejora</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <div class="help-field">
+                            <label for="helpMensaje"><i class="fas fa-comment-dots"></i> Describe tu problemática</label>
+                            <textarea id="helpMensaje" rows="6" placeholder="Cuéntanos en detalle qué está pasando o en qué podemos ayudarte..."></textarea>
+                        </div>
+
+                        <button class="btn-help-enviar" onclick="enviarHelp()">
+                            <i class="fas fa-paper-plane"></i>
+                            Enviar al soporte
+                        </button>
+                    </div>
+
+                    <!-- Mensaje de confirmación (oculto) -->
+                    <div class="help-success" id="helpSuccess" style="display:none;">
+                        <div class="help-success-icon"><i class="fas fa-check-circle"></i></div>
+                        <h3>¡Mensaje enviado!</h3>
+                        <p>Tu consulta ha sido redirigida a <strong>williamsjoseeduardo@gmail.com</strong>. Te responderemos a la brevedad.</p>
+                        <button class="btn-help-nuevo" onclick="nuevoMensajeHelp()">
+                            <i class="fas fa-plus"></i> Enviar otro mensaje
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Carrito de Compras (Sidebar) -->
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
@@ -284,7 +503,7 @@
                 <span id="cartTotal">$0.00</span>
             </div>
             <button class="btn-checkout">
-                <i class="fas fa-credit-card"></i> Proceder al Pago ✅
+                <i class="fas fa-credit-card"></i> Procesar Pago 
             </button>
         </div>
     </div>
@@ -301,8 +520,8 @@
                     <p>Tu tienda de confianza desde 2026.</p>
                     <p class="developer-info">
                         <strong>Desarrollador:</strong><br>
-                        José Eduardo Williams<br>
-                        <small>Matrícula: 23-EISN-2-048</small>
+                        José Eduardo Williams.<br>
+                        <small>Matrícula: 23-EISN-2-048.</small>
                     </p>
                 </div>
                 <div class="footer-section">
@@ -310,6 +529,12 @@
                     <p><i class="fas fa-phone"></i> +1 (849) 380-3490</p>
                     <p><i class="fas fa-envelope"></i> info@williamsstore.com</p>
                     <p><i class="fas fa-map-marker-alt"></i> La Romana, Romana del Oeste Calle 15.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Navegación Rápida 🗺️</h4>
+                    <p><a href="#" onclick="mostrarAcercaDe()" style="color:rgba(255,255,255,0.8); text-decoration:none;">Acerca de</a></p>
+                    <p><a href="#" onclick="mostrarHelp()" style="color:rgba(255,255,255,0.8); text-decoration:none;">Centro de Ayuda</a></p>
+                    <p><a href="#" onclick="mostrarOfertas()" style="color:rgba(255,255,255,0.8); text-decoration:none;">Ofertas Especiales</a></p>
                 </div>
             </div>
             <div class="footer-bottom">
