@@ -603,22 +603,413 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('cartOverlay').addEventListener('click', toggleCarrito);
 
-    document.querySelector('.btn-checkout').addEventListener('click', function() {
-        if (carrito.length === 0) {
-            mostrarNotificacion('Tu 🛒 está vacío.');
-            return;
-        }
-        const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
-        if (confirm(`¿Confirmar compra por $${formatearPrecio(total)}?`)) {
-            mostrarNotificacion('¡Compra realizada con éxito! 🎉');
-            carrito = [];
-            actualizarCarrito();
-            toggleCarrito();
-        }
-    });
+    // El botón checkout ahora abre el modal de pago via onclick="abrirPago()" en HTML
 });
 
 // ========== RESPONSIVE ==========
 window.addEventListener('resize', function() {
     document.getElementById('cartSidebar').style.width = window.innerWidth <= 768 ? '100%' : '400px';
 });
+
+// ================================================
+//  MODAL DE PAGO
+// ================================================
+let metodoPagoSeleccionado = null;
+
+function abrirPago() {
+    if (carrito.length === 0) {
+        mostrarNotificacion('Tu 🛒 está vacío.');
+        return;
+    }
+    if (!getSesion()) {
+        abrirAuth();
+        return;
+    }
+    // Resetear al paso 1
+    mostrarPasoUno();
+    metodoPagoSeleccionado = null;
+    document.querySelectorAll('.metodo-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('btnSiguiente').disabled = true;
+
+    const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+    document.getElementById('pagoTotalDisplay').textContent = '$' + formatearPrecio(total);
+    document.getElementById('efectivoTotal').textContent    = '$' + formatearPrecio(total);
+    document.getElementById('transTotal').textContent       = '$' + formatearPrecio(total);
+
+    document.getElementById('pagoOverlay').classList.add('active');
+    document.getElementById('pagoModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarPago() {
+    document.getElementById('pagoOverlay').classList.remove('active');
+    document.getElementById('pagoModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function mostrarPasoUno() {
+    ['pagoStep1','pagoStep2Tarjeta','pagoStep2Efectivo','pagoStep2Transferencia','pagoExito']
+        .forEach(id => { document.getElementById(id).style.display = 'none'; });
+    document.getElementById('pagoStep1').style.display = 'block';
+    limpiarPagoErrors();
+}
+
+function limpiarPagoErrors() {
+    ['tarjetaError','efectivoError','transError'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.textContent = ''; el.classList.remove('visible'); }
+    });
+}
+
+function seleccionarMetodo(metodo) {
+    metodoPagoSeleccionado = metodo;
+    document.querySelectorAll('.metodo-card').forEach(c => c.classList.remove('selected'));
+    const ids = { tarjeta: 'metodoTarjeta', efectivo: 'metodoEfectivo', transferencia: 'metodoTransferencia' };
+    document.getElementById(ids[metodo]).classList.add('selected');
+    document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguientePaso() {
+    if (!metodoPagoSeleccionado) return;
+    document.getElementById('pagoStep1').style.display = 'none';
+    const mapas = {
+        tarjeta:       'pagoStep2Tarjeta',
+        efectivo:      'pagoStep2Efectivo',
+        transferencia: 'pagoStep2Transferencia'
+    };
+    document.getElementById(mapas[metodoPagoSeleccionado]).style.display = 'block';
+}
+
+function volverPaso1() {
+    ['pagoStep2Tarjeta','pagoStep2Efectivo','pagoStep2Transferencia']
+        .forEach(id => { document.getElementById(id).style.display = 'none'; });
+    document.getElementById('pagoStep1').style.display = 'block';
+    limpiarPagoErrors();
+}
+
+// --- Tarjeta ---
+function formatCardNumber(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = val.replace(/(.{4})/g, '$1 ').trim();
+}
+
+function formatExpiry(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 4);
+    if (val.length >= 3) val = val.substring(0, 2) + '/' + val.substring(2);
+    input.value = val;
+}
+
+function actualizarTarjetaVisual() {
+    const num    = document.getElementById('cardNumero').value || '';
+    const tit    = document.getElementById('cardTitular').value || '';
+    const vence  = document.getElementById('cardVence').value || '';
+    document.getElementById('tvNumero').textContent  = num || '•••• •••• •••• ••••';
+    document.getElementById('tvTitular').textContent = tit.toUpperCase() || 'NOMBRE APELLIDO';
+    document.getElementById('tvVence').textContent   = vence || 'MM/AA';
+}
+
+function mostrarPagoError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.remove('visible');
+    void el.offsetWidth;
+    el.classList.add('visible');
+}
+
+function confirmarPagoTarjeta() {
+    const num   = document.getElementById('cardNumero').value.replace(/\s/g,'');
+    const tit   = document.getElementById('cardTitular').value.trim();
+    const vence = document.getElementById('cardVence').value.trim();
+    const cvv   = document.getElementById('cardCvv').value.trim();
+
+    if (num.length < 16)   { mostrarPagoError('tarjetaError','⚠️ Número de tarjeta inválido (16 dígitos).'); return; }
+    if (!tit)              { mostrarPagoError('tarjetaError','⚠️ Ingresa el nombre del titular.'); return; }
+    if (!/^\d{2}\/\d{2}$/.test(vence)) { mostrarPagoError('tarjetaError','⚠️ Formato de vencimiento inválido (MM/AA).'); return; }
+    if (cvv.length < 3)    { mostrarPagoError('tarjetaError','⚠️ CVV inválido.'); return; }
+
+    mostrarExitoPago('💳 Pago con tarjeta procesado exitosamente.');
+}
+
+// --- Efectivo ---
+function calcularVuelto() {
+    const total  = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+    const monto  = parseFloat(document.getElementById('efectivoMonto').value) || 0;
+    const box    = document.getElementById('vueltoBox');
+
+    if (monto <= 0) { box.style.display = 'none'; return; }
+    box.style.display = 'flex';
+    document.getElementById('vueltoTotal').textContent = '$' + formatearPrecio(total);
+    document.getElementById('vueltoMonto').textContent = '$' + formatearPrecio(monto);
+    const cambio = monto - total;
+    const elCambio = document.getElementById('vueltoCambio');
+    if (cambio < 0) {
+        elCambio.textContent = '⚠️ Monto insuficiente';
+        elCambio.style.color = '#dc2626';
+    } else {
+        elCambio.textContent = '$' + formatearPrecio(cambio);
+        elCambio.style.color = '#059669';
+    }
+}
+
+function confirmarPagoEfectivo() {
+    const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+    const monto = parseFloat(document.getElementById('efectivoMonto').value) || 0;
+    if (!monto || monto <= 0) { mostrarPagoError('efectivoError','⚠️ Ingresa el monto en efectivo.'); return; }
+    if (monto < total)        { mostrarPagoError('efectivoError','❌ El monto es menor al total del pedido.'); return; }
+    mostrarExitoPago('💵 Pedido confirmado. Paga en caja al retirar.');
+}
+
+// --- Transferencia ---
+function confirmarPagoTransferencia() {
+    const ref = document.getElementById('transReferencia').value.trim();
+    if (!ref) { mostrarPagoError('transError','⚠️ Ingresa el número de referencia de la transferencia.'); return; }
+    mostrarExitoPago('🏦 Transferencia registrada. Verificaremos el pago en breve.');
+}
+
+// --- Éxito ---
+function mostrarExitoPago(msg) {
+    ['pagoStep2Tarjeta','pagoStep2Efectivo','pagoStep2Transferencia']
+        .forEach(id => { document.getElementById(id).style.display = 'none'; });
+    document.getElementById('pagoExitoMsg').textContent = msg;
+    // Generar número de orden aleatorio
+    const orden = '#WS-' + Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('pagoOrden').textContent = orden;
+    document.getElementById('pagoExito').style.display = 'block';
+}
+
+function finalizarCompra() {
+    cerrarPago();
+    carrito = [];
+    actualizarCarrito();
+    if (document.getElementById('cartSidebar').classList.contains('active')) {
+        toggleCarrito();
+    }
+    mostrarNotificacion('¡Compra realizada con éxito! 🎉');
+}
+
+// ================================================
+//  MODAL DE PERFIL
+// ================================================
+function abrirPerfil() {
+    const sesion = getSesion();
+    if (!sesion) return;
+
+    // Cargar datos actuales en los campos
+    document.getElementById('perfilNombre').value    = sesion.nombre    || '';
+    document.getElementById('perfilApellido').value  = sesion.apellido  || '';
+    document.getElementById('perfilEmail').value     = sesion.email     || '';
+    document.getElementById('perfilTelefono').value  = sesion.telefono  || '';
+    document.getElementById('perfilDireccion').value = sesion.direccion || '';
+
+    // Header
+    const nombreCompleto = (sesion.nombre + ' ' + (sesion.apellido||'')).trim();
+    document.getElementById('perfilNombreHeader').textContent = nombreCompleto;
+    document.getElementById('perfilEmailHeader').textContent  = sesion.email;
+
+    // Avatar: foto o iniciales
+    const inicial = ((sesion.nombre||'').charAt(0) + (sesion.apellido||'').charAt(0)).toUpperCase();
+    document.getElementById('perfilAvatarBig').textContent = inicial;
+
+    if (sesion.foto) {
+        document.getElementById('perfilAvatarBig').style.display     = 'none';
+        document.getElementById('perfilAvatarImgWrap').style.display = 'block';
+        document.getElementById('perfilAvatarImg').src               = sesion.foto;
+    } else {
+        document.getElementById('perfilAvatarBig').style.display     = 'flex';
+        document.getElementById('perfilAvatarImgWrap').style.display = 'none';
+    }
+
+    // Resetear tab a Info
+    cambiarTab('info', document.querySelector('.perfil-tab'));
+    limpiarPerfilMessages();
+
+    document.getElementById('perfilOverlay').classList.add('active');
+    document.getElementById('perfilModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarPerfil() {
+    document.getElementById('perfilOverlay').classList.remove('active');
+    document.getElementById('perfilModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function limpiarPerfilMessages() {
+    ['perfilInfoError','perfilPassError'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.textContent = ''; el.classList.remove('visible'); }
+    });
+    // Limpiar campos de contraseña
+    ['passActual','passNueva','passConfirm2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    const bar = document.getElementById('passBar2');
+    const lbl = document.getElementById('passLabel2');
+    if (bar) { bar.style.width = '0%'; }
+    if (lbl) { lbl.textContent = ''; }
+}
+
+function cambiarTab(tab, btn) {
+    // Actualizar botones
+    document.querySelectorAll('.perfil-tab').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    // Mostrar/ocultar contenido
+    document.getElementById('tabInfo').style.display      = tab === 'info'      ? 'block' : 'none';
+    document.getElementById('tabSeguridad').style.display = tab === 'seguridad' ? 'block' : 'none';
+    limpiarPerfilMessages();
+}
+
+function mostrarPerfilError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.remove('visible');
+    void el.offsetWidth;
+    el.classList.add('visible');
+}
+
+function mostrarPerfilExito(id, msg) {
+    // Reutilizar el div de error con clase success
+    const el = document.getElementById(id);
+    el.className = 'perfil-success';
+    el.textContent = msg;
+    el.classList.remove('visible');
+    void el.offsetWidth;
+    el.classList.add('visible');
+    setTimeout(() => { el.className = 'perfil-error'; el.classList.remove('visible'); }, 3000);
+}
+
+function guardarInfoPerfil() {
+    const nombre    = document.getElementById('perfilNombre').value.trim();
+    const apellido  = document.getElementById('perfilApellido').value.trim();
+    const email     = document.getElementById('perfilEmail').value.trim().toLowerCase();
+    const telefono  = document.getElementById('perfilTelefono').value.trim();
+    const direccion = document.getElementById('perfilDireccion').value.trim();
+
+    if (!nombre)            { mostrarPerfilError('perfilInfoError','⚠️ El nombre no puede estar vacío.'); return; }
+    if (!email || !email.includes('@')) { mostrarPerfilError('perfilInfoError','⚠️ Correo electrónico inválido.'); return; }
+
+    const sesion    = getSesion();
+    const usuarios  = getUsuarios();
+    const idx       = usuarios.findIndex(u => u.email === sesion.email);
+
+    // Verificar si el nuevo email ya existe en otra cuenta
+    if (email !== sesion.email && usuarios.find(u => u.email === email)) {
+        mostrarPerfilError('perfilInfoError','❌ Ese correo ya está registrado en otra cuenta.');
+        return;
+    }
+
+    const actualizado = { ...sesion, nombre, apellido, email, telefono, direccion };
+    if (idx !== -1) { usuarios[idx] = actualizado; }
+    localStorage.setItem('ws_usuarios', JSON.stringify(usuarios));
+    guardarSesion(actualizado);
+    actualizarUIUsuario(actualizado);
+
+    // Actualizar header del perfil
+    document.getElementById('perfilNombreHeader').textContent = (nombre + ' ' + apellido).trim();
+    document.getElementById('perfilEmailHeader').textContent  = email;
+
+    mostrarPerfilExito('perfilInfoError','✅ Información actualizada correctamente.');
+    mostrarNotificacion('Perfil actualizado 👤');
+}
+
+function cambiarContrasena() {
+    const actual   = document.getElementById('passActual').value;
+    const nueva    = document.getElementById('passNueva').value;
+    const confirm  = document.getElementById('passConfirm2').value;
+    const sesion   = getSesion();
+
+    if (!actual)            { mostrarPerfilError('perfilPassError','⚠️ Ingresa tu contraseña actual.'); return; }
+    if (actual !== sesion.password) { mostrarPerfilError('perfilPassError','❌ La contraseña actual es incorrecta.'); return; }
+    if (nueva.length < 6)  { mostrarPerfilError('perfilPassError','⚠️ La nueva contraseña debe tener mínimo 6 caracteres.'); return; }
+    if (nueva !== confirm)  { mostrarPerfilError('perfilPassError','❌ Las contraseñas nuevas no coinciden.'); return; }
+
+    const usuarios = getUsuarios();
+    const idx      = usuarios.findIndex(u => u.email === sesion.email);
+    const actualizado = { ...sesion, password: nueva };
+    if (idx !== -1) { usuarios[idx] = actualizado; }
+    localStorage.setItem('ws_usuarios', JSON.stringify(usuarios));
+    guardarSesion(actualizado);
+
+    mostrarPerfilExito('perfilPassError','✅ Contraseña cambiada correctamente.');
+    mostrarNotificacion('Contraseña actualizada 🔒');
+    document.getElementById('passActual').value   = '';
+    document.getElementById('passNueva').value    = '';
+    document.getElementById('passConfirm2').value = '';
+}
+
+function cargarFotoPerfil(input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    if (!file.type.startsWith('image/')) { mostrarNotificacion('⚠️ Solo se permiten imágenes.'); return; }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64 = e.target.result;
+        const sesion   = getSesion();
+        const usuarios = getUsuarios();
+        const idx      = usuarios.findIndex(u => u.email === sesion.email);
+        const actualizado = { ...sesion, foto: base64 };
+        if (idx !== -1) { usuarios[idx] = actualizado; }
+        localStorage.setItem('ws_usuarios', JSON.stringify(usuarios));
+        guardarSesion(actualizado);
+
+        // Mostrar imagen en el modal
+        document.getElementById('perfilAvatarBig').style.display     = 'none';
+        document.getElementById('perfilAvatarImgWrap').style.display = 'block';
+        document.getElementById('perfilAvatarImg').src               = base64;
+
+        // Actualizar todos los avatares en la UI
+        actualizarAvatarUI(base64);
+        mostrarNotificacion('Foto de perfil actualizada 📸');
+    };
+    reader.readAsDataURL(file);
+}
+
+function actualizarAvatarUI(fotoBase64) {
+    // Reemplazar iniciales por imagen en nav y dropdown
+    const sesion = getSesion();
+    const ids = ['userAvatar','userDropAvatar'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = `<img src="${fotoBase64}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="foto">`;
+        el.style.padding = '0';
+        el.style.overflow = 'hidden';
+    });
+}
+
+// Evaluar fuerza de contraseña (tab seguridad perfil)
+function evalFuerza2(val) {
+    const bar   = document.getElementById('passBar2');
+    const label = document.getElementById('passLabel2');
+    if (!bar || !label) return;
+    let score = 0;
+    if (val.length >= 6)  score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    const niveles = [
+        { pct:'0%',   color:'transparent', text:'' },
+        { pct:'25%',  color:'#ef4444',     text:'🔴 Muy débil' },
+        { pct:'50%',  color:'#f59e0b',     text:'🟡 Débil' },
+        { pct:'70%',  color:'#3b82f6',     text:'🔵 Regular' },
+        { pct:'90%',  color:'#10b981',     text:'🟢 Fuerte' },
+        { pct:'100%', color:'#059669',     text:'✅ Muy fuerte' },
+    ];
+    const n = niveles[Math.min(score, 5)];
+    bar.style.width      = val.length === 0 ? '0%' : n.pct;
+    bar.style.background = n.color;
+    label.textContent    = val.length === 0 ? '' : n.text;
+    label.style.color    = n.color;
+}
+
+// Restaurar foto al cargar sesión
+const _origActualizarUI = actualizarUIUsuario;
+actualizarUIUsuario = function(usuario) {
+    _origActualizarUI(usuario);
+    if (usuario.foto) {
+        actualizarAvatarUI(usuario.foto);
+    }
+};

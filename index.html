@@ -13,16 +13,10 @@
     <div class="auth-overlay" id="authOverlay"></div>
     <div class="auth-modal" id="authModal">
         <div class="auth-modal-inner">
-
-            <!-- Panel Login -->
             <div class="auth-panel" id="panelLogin">
-                <div class="auth-logo">
-                    <i class="fas fa-store"></i>
-                    <span>Williams Store</span>
-                </div>
-                <h2 class="auth-title">Bienvenido nuevamente.</h2>
-                <p class="auth-subtitle">Inicia sesión para continuar comprando.</p>
-
+                <div class="auth-logo"><i class="fas fa-store"></i><span>Williams Store</span></div>
+                <h2 class="auth-title">Bienvenido de vuelta &#128075;</h2>
+                <p class="auth-subtitle">Inicia sesión para continuar comprando</p>
                 <div class="auth-field">
                     <label><i class="fas fa-envelope"></i> Correo electrónico</label>
                     <input type="email" id="loginEmail" placeholder="tu@correo.com" autocomplete="off">
@@ -31,27 +25,17 @@
                     <label><i class="fas fa-lock"></i> Contraseña</label>
                     <div class="auth-input-wrap">
                         <input type="password" id="loginPassword" placeholder="Tu contraseña...">
-                        <button class="toggle-pass" onclick="togglePass('loginPassword', this)" tabindex="-1">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                        <button class="toggle-pass" onclick="togglePass('loginPassword', this)" tabindex="-1"><i class="fas fa-eye"></i></button>
                     </div>
                 </div>
                 <div class="auth-error" id="loginError"></div>
-                <button class="auth-btn-primary" onclick="iniciarSesion()">
-                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
-                </button>
-                <p class="auth-switch">¿No tienes cuenta? <span onclick="mostrarRegistro()">Regístrate aquí.</span></p>
+                <button class="auth-btn-primary" onclick="iniciarSesion()"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</button>
+                <p class="auth-switch">No tienes cuenta? <span onclick="mostrarRegistro()">Regístrate aquí</span></p>
             </div>
-
-            <!-- Panel Registro -->
             <div class="auth-panel" id="panelRegistro" style="display:none;">
-                <div class="auth-logo">
-                    <i class="fas fa-store"></i>
-                    <span>Williams Store</span>
-                </div>
-                <h2 class="auth-title">Crear cuenta 👤</h2>
-                <p class="auth-subtitle">Únete y empieza a comprar hoy mismo.</p>
-
+                <div class="auth-logo"><i class="fas fa-store"></i><span>Williams Store</span></div>
+                <h2 class="auth-title">Crear cuenta &#10024;</h2>
+                <p class="auth-subtitle">Únete y empieza a comprar hoy mismo</p>
                 <div class="auth-form-row">
                     <div class="auth-field">
                         <label><i class="fas fa-user"></i> Nombre</label>
@@ -70,51 +54,259 @@
                     <label><i class="fas fa-lock"></i> Contraseña</label>
                     <div class="auth-input-wrap">
                         <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres..." oninput="evalFuerza(this.value)">
-                        <button class="toggle-pass" onclick="togglePass('regPassword', this)" tabindex="-1">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                        <button class="toggle-pass" onclick="togglePass('regPassword', this)" tabindex="-1"><i class="fas fa-eye"></i></button>
                     </div>
-                    <div class="pass-strength" id="passStrength">
-                        <div class="pass-bar" id="passBar"></div>
-                    </div>
+                    <div class="pass-strength" id="passStrength"><div class="pass-bar" id="passBar"></div></div>
                     <span class="pass-label" id="passLabel"></span>
                 </div>
                 <div class="auth-field">
                     <label><i class="fas fa-lock"></i> Confirmar contraseña</label>
                     <div class="auth-input-wrap">
                         <input type="password" id="regConfirm" placeholder="Repite tu contraseña...">
-                        <button class="toggle-pass" onclick="togglePass('regConfirm', this)" tabindex="-1">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                        <button class="toggle-pass" onclick="togglePass('regConfirm', this)" tabindex="-1"><i class="fas fa-eye"></i></button>
                     </div>
                 </div>
                 <div class="auth-error" id="registroError"></div>
-                <button class="auth-btn-primary" onclick="registrarse()">
-                    <i class="fas fa-user-plus"></i> Crear Cuenta
-                </button>
-                <p class="auth-switch">¿Ya tienes cuenta? <span onclick="mostrarLogin()">Inicia sesión</span></p>
+                <button class="auth-btn-primary" onclick="registrarse()"><i class="fas fa-user-plus"></i> Crear Cuenta</button>
+                <p class="auth-switch">Ya tienes cuenta? <span onclick="mostrarLogin()">Inicia sesión</span></p>
             </div>
-
-            <!-- Panel Éxito Registro -->
             <div class="auth-panel auth-success-panel" id="panelExito" style="display:none;">
                 <div class="auth-success-icon"><i class="fas fa-check-circle"></i></div>
-                <h2>¡Cuenta creada con éxito! ✅</h2>
+                <h2>Cuenta creada! &#127881;</h2>
                 <p>Tu cuenta ha sido registrada exitosamente. Ya puedes iniciar sesión y comenzar a comprar.</p>
-                <button class="auth-btn-primary" onclick="mostrarLogin()">
-                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
-                </button>
+                <button class="auth-btn-primary" onclick="mostrarLogin()"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</button>
             </div>
-
         </div>
     </div>
 
-    <!-- Header con navegación -->
+    <!-- ======== MODAL: Procesar Pago ======== -->
+    <div class="pago-overlay" id="pagoOverlay" onclick="cerrarPago()"></div>
+    <div class="pago-modal" id="pagoModal">
+        <div class="pago-modal-inner">
+            <button class="pago-close" onclick="cerrarPago()"><i class="fas fa-times"></i></button>
+
+            <!-- PASO 1: Elegir método -->
+            <div id="pagoStep1">
+                <div class="pago-header">
+                    <div class="pago-header-icon"><i class="fas fa-credit-card"></i></div>
+                    <h2>Procesar Pago &#128179;</h2>
+                    <p>Total a pagar: <strong id="pagoTotalDisplay">$0.00</strong></p>
+                </div>
+                <h3 class="pago-section-label">Como quieres pagar?</h3>
+                <div class="metodos-grid">
+                    <div class="metodo-card" id="metodoTarjeta" onclick="seleccionarMetodo('tarjeta')">
+                        <div class="metodo-icon" style="background:#e0f2fe; color:#0284c7;"><i class="fas fa-credit-card"></i></div>
+                        <div class="metodo-info"><strong>Tarjeta</strong><span>Débito o crédito</span></div>
+                        <div class="metodo-check"><i class="fas fa-check-circle"></i></div>
+                    </div>
+                    <div class="metodo-card" id="metodoEfectivo" onclick="seleccionarMetodo('efectivo')">
+                        <div class="metodo-icon" style="background:#dcfce7; color:#16a34a;"><i class="fas fa-money-bill-wave"></i></div>
+                        <div class="metodo-info"><strong>Efectivo</strong><span>Paga en caja</span></div>
+                        <div class="metodo-check"><i class="fas fa-check-circle"></i></div>
+                    </div>
+                    <div class="metodo-card" id="metodoTransferencia" onclick="seleccionarMetodo('transferencia')">
+                        <div class="metodo-icon" style="background:#fef3c7; color:#d97706;"><i class="fas fa-university"></i></div>
+                        <div class="metodo-info"><strong>Transferencia</strong><span>Bancaria</span></div>
+                        <div class="metodo-check"><i class="fas fa-check-circle"></i></div>
+                    </div>
+                </div>
+                <button class="pago-btn-primary" id="btnSiguiente" onclick="siguientePaso()" disabled>
+                    Continuar <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- PASO 2A: Tarjeta -->
+            <div id="pagoStep2Tarjeta" style="display:none;">
+                <div class="tarjeta-visual">
+                    <div class="tarjeta-chip"><i class="fas fa-microchip"></i></div>
+                    <div class="tarjeta-numero" id="tvNumero">•••• •••• •••• ••••</div>
+                    <div class="tarjeta-bottom">
+                        <div><div class="tarjeta-label">Titular</div><div class="tarjeta-valor" id="tvTitular">NOMBRE APELLIDO</div></div>
+                        <div><div class="tarjeta-label">Vence</div><div class="tarjeta-valor" id="tvVence">MM/AA</div></div>
+                        <div class="tarjeta-logo"><i class="fab fa-cc-visa" style="font-size:2rem;"></i></div>
+                    </div>
+                </div>
+                <div class="pago-form">
+                    <div class="pago-field">
+                        <label><i class="fas fa-hashtag"></i> Número de tarjeta</label>
+                        <input type="text" id="cardNumero" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this); actualizarTarjetaVisual()">
+                    </div>
+                    <div class="pago-field">
+                        <label><i class="fas fa-user"></i> Nombre del titular</label>
+                        <input type="text" id="cardTitular" placeholder="Como aparece en la tarjeta" oninput="actualizarTarjetaVisual()">
+                    </div>
+                    <div class="pago-form-row">
+                        <div class="pago-field">
+                            <label><i class="fas fa-calendar"></i> Vencimiento</label>
+                            <input type="text" id="cardVence" placeholder="MM/AA" maxlength="5" oninput="formatExpiry(this); actualizarTarjetaVisual()">
+                        </div>
+                        <div class="pago-field">
+                            <label><i class="fas fa-lock"></i> CVV</label>
+                            <input type="password" id="cardCvv" placeholder="•••" maxlength="4">
+                        </div>
+                    </div>
+                </div>
+                <div class="auth-error" id="tarjetaError"></div>
+                <div class="pago-btns">
+                    <button class="pago-btn-secondary" onclick="volverPaso1()"><i class="fas fa-arrow-left"></i> Volver</button>
+                    <button class="pago-btn-primary" onclick="confirmarPagoTarjeta()"><i class="fas fa-lock"></i> Pagar ahora</button>
+                </div>
+            </div>
+
+            <!-- PASO 2B: Efectivo -->
+            <div id="pagoStep2Efectivo" style="display:none;">
+                <div class="pago-header">
+                    <div class="pago-header-icon" style="background:#dcfce7; color:#16a34a;"><i class="fas fa-money-bill-wave"></i></div>
+                    <h2>Pago en Efectivo &#128181;</h2>
+                    <p>Tu pedido estará listo para que lo pagues en caja al retirarlo.</p>
+                </div>
+                <div class="pago-form">
+                    <div class="pago-field">
+                        <label><i class="fas fa-dollar-sign"></i> Con cuanto vas a pagar?</label>
+                        <input type="number" id="efectivoMonto" placeholder="Ingresa el monto en RD$..." oninput="calcularVuelto()" min="0" step="50">
+                    </div>
+                    <div class="vuelto-box" id="vueltoBox" style="display:none;">
+                        <div class="vuelto-row"><span>Total del pedido:</span><strong id="vueltoTotal">$0.00</strong></div>
+                        <div class="vuelto-row"><span>Pagas con:</span><strong id="vueltoMonto">$0.00</strong></div>
+                        <div class="vuelto-row vuelto-cambio"><span>Tu cambio:</span><strong id="vueltoCambio">$0.00</strong></div>
+                    </div>
+                    <div class="efectivo-nota">
+                        <i class="fas fa-info-circle"></i>
+                        Total a pagar en caja: <strong id="efectivoTotal">$0.00</strong>
+                    </div>
+                </div>
+                <div class="auth-error" id="efectivoError"></div>
+                <div class="pago-btns">
+                    <button class="pago-btn-secondary" onclick="volverPaso1()"><i class="fas fa-arrow-left"></i> Volver</button>
+                    <button class="pago-btn-primary" onclick="confirmarPagoEfectivo()"><i class="fas fa-check"></i> Confirmar pedido</button>
+                </div>
+            </div>
+
+            <!-- PASO 2C: Transferencia -->
+            <div id="pagoStep2Transferencia" style="display:none;">
+                <div class="pago-header">
+                    <div class="pago-header-icon" style="background:#fef3c7; color:#d97706;"><i class="fas fa-university"></i></div>
+                    <h2>Transferencia Bancaria &#127974;</h2>
+                    <p>Realiza la transferencia a la cuenta indicada y comparte tu número de referencia.</p>
+                </div>
+                <div class="banco-info">
+                    <div class="banco-row"><i class="fas fa-university"></i><div><strong>Banco Popular</strong><span>Cuenta: 123-456789-0</span></div></div>
+                    <div class="banco-row"><i class="fas fa-user"></i><div><strong>Titular</strong><span>José Eduardo Williams</span></div></div>
+                    <div class="banco-row"><i class="fas fa-dollar-sign"></i><div><strong>Monto a transferir</strong><span id="transTotal" style="color:var(--primary-color); font-weight:700;">$0.00</span></div></div>
+                </div>
+                <div class="pago-form">
+                    <div class="pago-field">
+                        <label><i class="fas fa-hashtag"></i> Número de referencia / confirmación</label>
+                        <input type="text" id="transReferencia" placeholder="Ej: TRF-2026-001234">
+                    </div>
+                </div>
+                <div class="auth-error" id="transError"></div>
+                <div class="pago-btns">
+                    <button class="pago-btn-secondary" onclick="volverPaso1()"><i class="fas fa-arrow-left"></i> Volver</button>
+                    <button class="pago-btn-primary" onclick="confirmarPagoTransferencia()"><i class="fas fa-paper-plane"></i> Enviar comprobante</button>
+                </div>
+            </div>
+
+            <!-- PASO 3: Exito -->
+            <div id="pagoExito" style="display:none;">
+                <div class="pago-exito">
+                    <div class="pago-exito-icon"><i class="fas fa-check-circle"></i></div>
+                    <h2>Compra realizada! &#127881;</h2>
+                    <p id="pagoExitoMsg">Pago procesado correctamente.</p>
+                    <div class="pago-orden">Orden: <strong id="pagoOrden">#WS-000000</strong></div>
+                    <button class="pago-btn-primary" onclick="finalizarCompra()"><i class="fas fa-home"></i> Volver a la tienda</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== MODAL: Perfil de Usuario ======== -->
+    <div class="perfil-overlay" id="perfilOverlay" onclick="cerrarPerfil()"></div>
+    <div class="perfil-modal" id="perfilModal">
+        <div class="perfil-modal-inner">
+            <button class="perfil-close" onclick="cerrarPerfil()"><i class="fas fa-times"></i></button>
+            <div class="perfil-header">
+                <div class="perfil-avatar-wrap">
+                    <div class="perfil-avatar-big" id="perfilAvatarBig">JW</div>
+                    <div id="perfilAvatarImgWrap" style="display:none;">
+                        <img id="perfilAvatarImg" src="" alt="foto perfil" class="perfil-avatar-foto">
+                    </div>
+                    <label class="perfil-avatar-cam" for="fotoInput" title="Cambiar foto">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                    <input type="file" id="fotoInput" accept="image/*" style="display:none;" onchange="cargarFotoPerfil(this)">
+                </div>
+                <div class="perfil-header-info">
+                    <h3 id="perfilNombreHeader">Nombre Apellido</h3>
+                    <span id="perfilEmailHeader">correo@ejemplo.com</span>
+                </div>
+            </div>
+            <div class="perfil-tabs">
+                <button class="perfil-tab active" onclick="cambiarTab('info', this)"><i class="fas fa-user"></i> Mi Información</button>
+                <button class="perfil-tab" onclick="cambiarTab('seguridad', this)"><i class="fas fa-shield-alt"></i> Seguridad</button>
+            </div>
+            <div id="tabInfo">
+                <div class="perfil-form-row">
+                    <div class="perfil-field">
+                        <label><i class="fas fa-user"></i> Nombre</label>
+                        <input type="text" id="perfilNombre" placeholder="Tu nombre">
+                    </div>
+                    <div class="perfil-field">
+                        <label><i class="fas fa-user"></i> Apellido</label>
+                        <input type="text" id="perfilApellido" placeholder="Tu apellido">
+                    </div>
+                </div>
+                <div class="perfil-field">
+                    <label><i class="fas fa-envelope"></i> Correo electrónico</label>
+                    <input type="email" id="perfilEmail" placeholder="tu@correo.com">
+                </div>
+                <div class="perfil-form-row">
+                    <div class="perfil-field">
+                        <label><i class="fas fa-phone"></i> Teléfono <span class="perfil-optional">opcional</span></label>
+                        <input type="text" id="perfilTelefono" placeholder="+1 (849) 000-0000">
+                    </div>
+                    <div class="perfil-field">
+                        <label><i class="fas fa-map-marker-alt"></i> Dirección <span class="perfil-optional">opcional</span></label>
+                        <input type="text" id="perfilDireccion" placeholder="Calle, Ciudad">
+                    </div>
+                </div>
+                <div class="auth-error" id="perfilInfoError"></div>
+                <button class="pago-btn-primary" style="margin-top:0.5rem;" onclick="guardarInfoPerfil()"><i class="fas fa-save"></i> Guardar cambios</button>
+            </div>
+            <div id="tabSeguridad" style="display:none;">
+                <div class="perfil-field">
+                    <label><i class="fas fa-lock"></i> Contraseña actual</label>
+                    <div class="auth-input-wrap">
+                        <input type="password" id="passActual" placeholder="Tu contraseña actual...">
+                        <button class="toggle-pass" onclick="togglePass('passActual', this)" tabindex="-1"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <div class="perfil-field">
+                    <label><i class="fas fa-lock"></i> Nueva contraseña</label>
+                    <div class="auth-input-wrap">
+                        <input type="password" id="passNueva" placeholder="Mínimo 6 caracteres..." oninput="evalFuerza2(this.value)">
+                        <button class="toggle-pass" onclick="togglePass('passNueva', this)" tabindex="-1"><i class="fas fa-eye"></i></button>
+                    </div>
+                    <div class="pass-strength" style="margin-top:0.4rem;"><div class="pass-bar" id="passBar2"></div></div>
+                    <span class="pass-label" id="passLabel2"></span>
+                </div>
+                <div class="perfil-field">
+                    <label><i class="fas fa-lock"></i> Confirmar nueva contraseña</label>
+                    <div class="auth-input-wrap">
+                        <input type="password" id="passConfirm2" placeholder="Repite la nueva contraseña...">
+                        <button class="toggle-pass" onclick="togglePass('passConfirm2', this)" tabindex="-1"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <div class="auth-error" id="perfilPassError"></div>
+                <button class="pago-btn-primary" style="margin-top:0.5rem;" onclick="cambiarContrasena()"><i class="fas fa-key"></i> Cambiar contraseña</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
     <header class="header">
         <div class="container">
-            <div class="logo" onclick="irAInicio()">
-                <i class="fas fa-store"></i>
-                <span>Williams Store</span>
-            </div>
+            <div class="logo" onclick="irAInicio()"><i class="fas fa-store"></i><span>Williams Store</span></div>
             <nav class="nav" id="mainNav">
                 <a href="#" onclick="irAInicio(); cerrarMenu()">Inicio</a>
                 <a href="#" onclick="mostrarDepartamentos(); cerrarMenu()">Departamentos</a>
@@ -123,10 +315,9 @@
                 <a href="#" onclick="mostrarHelp(); cerrarMenu()" class="nav-help"><i class="fas fa-headset"></i> <span>Help</span></a>
             </nav>
             <div class="header-right">
-                <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menú">
+                <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()" aria-label="Menu">
                     <span></span><span></span><span></span>
                 </button>
-                <!-- Botón de usuario (visible cuando logueado) -->
                 <div class="user-menu-wrap" id="userMenuWrap" style="display:none;">
                     <button class="user-btn" onclick="toggleUserMenu()">
                         <div class="user-avatar" id="userAvatar">J</div>
@@ -142,12 +333,14 @@
                             </div>
                         </div>
                         <hr class="user-dropdown-divider">
+                        <button class="user-dropdown-item" onclick="abrirPerfil(); cerrarUserMenu()">
+                            <i class="fas fa-user-cog"></i> Mi Perfil
+                        </button>
                         <button class="user-dropdown-item" onclick="cerrarSesion()">
-                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesion
                         </button>
                     </div>
                 </div>
-                <!-- Botón login (visible cuando NO logueado) -->
                 <button class="btn-login-nav" id="btnLoginNav" onclick="abrirAuth()">
                     <i class="fas fa-user"></i> <span>Ingresar</span>
                 </button>
@@ -155,29 +348,27 @@
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count" id="cartCount">0</span>
                 </div>
-            </div><!-- /header-right -->
+            </div>
         </div>
     </header>
 
-    <!-- SECCIÓN: Hero + Conócenos (SE VE AL INICIO) -->
+    <!-- SECCION: Hero + Conocenos -->
     <section class="hero-conocenos-unified" id="seccionInicio">
         <div class="hero-banner">
             <div class="hero-content">
-                <h1>¡Bienvenido a Williams Store! ❤️</h1>
+                <h1>Bienvenido a Williams Store! &#10084;&#65039;</h1>
                 <p>Calidad, variedad y los mejores precios en un solo lugar.</p>
-                <button class="btn-scroll" onclick="mostrarDepartamentos()">
-                    <i class="fas fa-shopping-bag"></i> Ver Productos
-                </button>
+                <button class="btn-scroll" onclick="mostrarDepartamentos()"><i class="fas fa-shopping-bag"></i> Ver Productos</button>
             </div>
         </div>
         <div class="conocenos-content-unified">
             <div class="container">
-                <h2 class="section-title-small">Store 🌹.</h2>
+                <h2 class="section-title-small">Store &#127801;.</h2>
                 <div class="conocenos-grid">
                     <div class="conocenos-texto">
-                        <h3>¿Quiénes somos?</h3>
+                        <h3>Quienes somos?</h3>
                         <p><strong>Williams Store</strong> es tu tienda de confianza desde 2026, dedicada a ofrecerte los mejores productos en múltiples departamentos. Nuestro compromiso es brindarte calidad, variedad y precios competitivos en cada compra que realices con nosotros.</p>
-                        <h3>¿Por qué comprar aquí?</h3>
+                        <h3>Por que comprar aquí?</h3>
                         <div class="ventajas-lista">
                             <div class="ventaja-box"><i class="fas fa-shield-alt"></i><div><h4>Productos de Calidad</h4><p>Artículos cuidadosamente seleccionados.</p></div></div>
                             <div class="ventaja-box"><i class="fas fa-tags"></i><div><h4>Mejores Precios</h4><p>Precios competitivos todo el año.</p></div></div>
@@ -198,48 +389,46 @@
         </div>
     </section>
 
-    <!-- SECCIÓN: Departamentos -->
+    <!-- SECCION: Departamentos -->
     <section class="departamentos-section" id="seccionDepartamentos" style="display: none;">
         <div class="container">
-            <div class="breadcrumb-nav">
-                <button class="btn-nav" onclick="irAInicio()"><i class="fas fa-home"></i> Inicio 🔙</button>
-            </div>
-            <h2 class="section-title">Dept's 🛒</h2>
+            <div class="breadcrumb-nav"><button class="btn-nav" onclick="irAInicio()"><i class="fas fa-home"></i> Inicio &#128281;</button></div>
+            <h2 class="section-title">Dept's &#128722;</h2>
             <p class="section-subtitle">Explora nuestra amplia variedad de productos organizados por categorías.</p>
             <div class="departamentos-grid">
                 <div class="departamento-card" onclick="abrirDepartamento('electronica')">
                     <div class="departamento-imagen"><img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?w=500&q=80" alt="Electrónica"></div>
-                    <div class="departamento-info"><h3>Dispositivos Electrónicos 💻</h3><p>Computadoras, celulares y accesorios tecnológicos de última generación.</p><span class="badge">150+ productos</span></div>
+                    <div class="departamento-info"><h3>Dispositivos Electrónicos &#128187;</h3><p>Computadoras, celulares y accesorios tecnológicos de última generación.</p><span class="badge">150+ productos</span></div>
                 </div>
                 <div class="departamento-card" onclick="abrirDepartamento('ropa')">
                     <div class="departamento-imagen"><img src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=500&q=80" alt="Ropa"></div>
-                    <div class="departamento-info"><h3>Ropa 👕</h3><p>Moda actual para toda la familia con las mejores marcas del mercado.</p><span class="badge">300+ productos</span></div>
+                    <div class="departamento-info"><h3>Ropa &#128085;</h3><p>Moda actual para toda la familia con las mejores marcas del mercado.</p><span class="badge">300+ productos</span></div>
                 </div>
                 <div class="departamento-card" onclick="abrirDepartamento('hogar')">
                     <div class="departamento-imagen"><img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=500&q=80" alt="Hogar"></div>
-                    <div class="departamento-info"><h3>Hogar 🏠</h3><p>Muebles y artículos de decoración para crear espacios únicos.</p><span class="badge">200+ productos</span></div>
+                    <div class="departamento-info"><h3>Hogar &#127968;</h3><p>Muebles y artículos de decoración para crear espacios únicos.</p><span class="badge">200+ productos</span></div>
                 </div>
                 <div class="departamento-card" onclick="abrirDepartamento('deportes')">
                     <div class="departamento-imagen"><img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=500&q=80" alt="Deportes"></div>
-                    <div class="departamento-info"><h3>Deportes ⚾</h3><p>Equipamiento deportivo profesional para todos los niveles.</p><span class="badge">180+ productos</span></div>
+                    <div class="departamento-info"><h3>Deportes &#9918;</h3><p>Equipamiento deportivo profesional para todos los niveles.</p><span class="badge">180+ productos</span></div>
                 </div>
                 <div class="departamento-card" onclick="abrirDepartamento('juguetes')">
                     <div class="departamento-imagen"><img src="https://images.unsplash.com/photo-1598541264502-84dc6aa2fb87?w=500&q=80" alt="Juguetes"></div>
-                    <div class="departamento-info"><h3>Juguetes 🪁</h3><p>Diversión garantizada para los más pequeños del hogar.</p><span class="badge">250+ productos</span></div>
+                    <div class="departamento-info"><h3>Juguetes &#129482;</h3><p>Diversión garantizada para los más pequeños del hogar.</p><span class="badge">250+ productos</span></div>
                 </div>
                 <div class="departamento-card" onclick="abrirDepartamento('alimentos')">
                     <div class="departamento-imagen"><img src="https://images.unsplash.com/photo-1543168256-418811576931?w=500&q=80" alt="Alimentos"></div>
-                    <div class="departamento-info"><h3>Alimentos 🥩</h3><p>Productos frescos y de calidad para tu mesa todos los días.</p><span class="badge">400+ productos</span></div>
+                    <div class="departamento-info"><h3>Alimentos &#129385;</h3><p>Productos frescos y de calidad para tu mesa todos los días.</p><span class="badge">400+ productos</span></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SECCIÓN: Vista de Productos -->
+    <!-- SECCION: Vista de Productos -->
     <section class="productos-section" id="seccionProductos" style="display: none;">
         <div class="container">
             <div class="breadcrumb-nav">
-                <button class="btn-nav" onclick="irAInicio()"><i class="fas fa-home"></i> Inicio 🔙</button>
+                <button class="btn-nav" onclick="irAInicio()"><i class="fas fa-home"></i> Inicio &#128281;</button>
                 <button class="btn-nav btn-nav-secondary" onclick="mostrarDepartamentos()"><i class="fas fa-th-large"></i> Otros Departamentos</button>
             </div>
             <div class="breadcrumb-text"><span id="breadcrumbText">Inicio / Departamento</span></div>
@@ -248,13 +437,11 @@
         </div>
     </section>
 
-    <!-- SECCIÓN: Ofertas -->
+    <!-- SECCION: Ofertas -->
     <section class="ofertas-section" id="seccionOfertas" style="display: none;">
         <div class="container">
-            <div class="breadcrumb-nav-ofertas">
-                <button class="btn-nav-white" onclick="irAInicio()"><i class="fas fa-home"></i> Inicio 🔙</button>
-            </div>
-            <h2 class="section-title">Ofertas 📢</h2>
+            <div class="breadcrumb-nav-ofertas"><button class="btn-nav-white" onclick="irAInicio()"><i class="fas fa-home"></i> Inicio &#128281;</button></div>
+            <h2 class="section-title">Ofertas &#128226;</h2>
             <p class="section-subtitle-white">Aprovecha nuestras promociones exclusivas por tiempo limitado.</p>
             <div class="ofertas-grid">
                 <div class="oferta-card">
@@ -282,7 +469,7 @@
         </div>
     </section>
 
-    <!-- SECCIÓN: Acerca de -->
+    <!-- SECCION: Acerca de -->
     <section class="acerca-section" id="seccionAcercaDe" style="display: none;">
         <div class="acerca-hero">
             <div class="acerca-hero-bg"></div>
@@ -293,9 +480,7 @@
             </div>
         </div>
         <div class="container acerca-body">
-            <div class="breadcrumb-nav" style="margin-bottom:2rem;">
-                <button class="btn-nav" onclick="irAInicio()"><i class="fas fa-home"></i> Inicio 🔙</button>
-            </div>
+            <div class="breadcrumb-nav" style="margin-bottom:2rem;"><button class="btn-nav" onclick="irAInicio()"><i class="fas fa-home"></i> Inicio &#128281;</button></div>
             <div class="acerca-mvv-grid">
                 <div class="acerca-mvv-card acerca-mision">
                     <div class="acerca-mvv-icon"><i class="fas fa-bullseye"></i></div>
@@ -345,7 +530,7 @@
         </div>
     </section>
 
-    <!-- SECCIÓN: Help -->
+    <!-- SECCION: Help -->
     <section class="help-section" id="seccionHelp" style="display: none;">
         <div class="help-bg-decoration">
             <div class="help-circle help-circle-1"></div>
@@ -354,13 +539,13 @@
         </div>
         <div class="container help-container">
             <div class="breadcrumb-nav" style="margin-bottom:2rem; position:relative; z-index:2;">
-                <button class="btn-nav" onclick="irAInicio()"><i class="fas fa-home"></i> Inicio 🔙</button>
+                <button class="btn-nav" onclick="irAInicio()"><i class="fas fa-home"></i> Inicio &#128281;</button>
             </div>
             <div class="help-layout">
                 <div class="help-info-panel">
                     <div class="help-icon-wrap"><i class="fas fa-headset"></i></div>
                     <h2 class="help-title">Centro de<br><span>Ayuda</span></h2>
-                    <p class="help-subtitle">¿Tienes algún problema, duda o sugerencia? Cuéntanos y te responderemos a la brevedad posible.</p>
+                    <p class="help-subtitle">Tienes algun problema, duda o sugerencia? Cuentanos y te responderemos a la brevedad posible.</p>
                     <div class="help-info-items">
                         <div class="help-info-item"><div class="help-info-icon"><i class="fas fa-envelope"></i></div><div><strong>Correo directo:</strong><p>williamsjoseeduardo@gmail.com</p></div></div>
                         <div class="help-info-item"><div class="help-info-icon"><i class="fas fa-phone"></i></div><div><strong>Teléfono:</strong><p>+1 (849) 380-3490</p></div></div>
@@ -370,7 +555,7 @@
                 </div>
                 <div class="help-form-panel">
                     <div class="help-form-header">
-                        <h3>Envíanos tu mensaje 📧</h3>
+                        <h3>Envianos tu mensaje &#128231;</h3>
                         <p>Completa el formulario y lo recibiremos en nuestro correo.</p>
                     </div>
                     <div class="help-form" id="helpForm">
@@ -390,12 +575,12 @@
                                 <option value="Otro">Otro</option>
                             </select>
                         </div>
-                        <div class="help-field"><label for="helpMensaje"><i class="fas fa-comment-dots"></i> Describe tu problemática</label><textarea id="helpMensaje" rows="6" placeholder="Cuéntanos en detalle qué está pasando o en qué podemos ayudarte..."></textarea></div>
+                        <div class="help-field"><label for="helpMensaje"><i class="fas fa-comment-dots"></i> Describe tu problematica</label><textarea id="helpMensaje" rows="6" placeholder="Cuentanos en detalle que esta pasando o en que podemos ayudarte..."></textarea></div>
                         <button class="btn-help-enviar" onclick="enviarHelp()"><i class="fas fa-paper-plane"></i> Enviar al soporte</button>
                     </div>
                     <div class="help-success" id="helpSuccess" style="display:none;">
                         <div class="help-success-icon"><i class="fas fa-check-circle"></i></div>
-                        <h3>¡Mensaje enviado!</h3>
+                        <h3>Mensaje enviado!</h3>
                         <p>Tu consulta ha sido redirigida a <strong>williamsjoseeduardo@gmail.com</strong>. Te responderemos a la brevedad.</p>
                         <button class="btn-help-nuevo" onclick="nuevoMensajeHelp()"><i class="fas fa-plus"></i> Enviar otro mensaje</button>
                     </div>
@@ -411,11 +596,11 @@
             <button class="cart-close" onclick="toggleCarrito()"><i class="fas fa-times"></i></button>
         </div>
         <div class="cart-items" id="cartItems">
-            <div class="cart-empty"><i class="fas fa-shopping-cart"></i><p>Tu carrito está vacío.</p></div>
+            <div class="cart-empty"><i class="fas fa-shopping-cart"></i><p>Tu carrito esta vacio.</p></div>
         </div>
         <div class="cart-footer">
             <div class="cart-total"><span>Total:</span><span id="cartTotal">$0.00</span></div>
-            <button class="btn-checkout"><i class="fas fa-credit-card"></i> Procesar Pago</button>
+            <button class="btn-checkout" onclick="abrirPago()"><i class="fas fa-credit-card"></i> Procesar Pago</button>
         </div>
     </div>
 
@@ -431,13 +616,13 @@
                     <p class="developer-info"><strong>Desarrollador:</strong><br>José Eduardo Williams.<br><small>Matrícula: 23-EISN-2-048.</small></p>
                 </div>
                 <div class="footer-section">
-                    <h4>Contacto 📞</h4>
+                    <h4>Contacto &#128222;</h4>
                     <p><i class="fas fa-phone"></i> +1 (849) 380-3490</p>
                     <p><i class="fas fa-envelope"></i> info@williamsstore.com</p>
                     <p><i class="fas fa-map-marker-alt"></i> La Romana, Romana del Oeste Calle 15.</p>
                 </div>
                 <div class="footer-section">
-                    <h4>Navegación Rápida 🗺️</h4>
+                    <h4>Navegación Rápida &#128507;</h4>
                     <p><a href="#" onclick="mostrarAcercaDe()" style="color:rgba(255,255,255,0.8); text-decoration:none;">Acerca de</a></p>
                     <p><a href="#" onclick="mostrarHelp()" style="color:rgba(255,255,255,0.8); text-decoration:none;">Centro de Ayuda</a></p>
                     <p><a href="#" onclick="mostrarOfertas()" style="color:rgba(255,255,255,0.8); text-decoration:none;">Ofertas Especiales</a></p>
