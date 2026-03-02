@@ -1,3 +1,212 @@
+// ========== SISTEMA DE AUTENTICACIÓN ==========
+// Los usuarios se guardan en localStorage: clave "ws_usuarios" → array de objetos
+// La sesión activa se guarda en "ws_sesion" → objeto del usuario logueado
+
+function getUsuarios() {
+    return JSON.parse(localStorage.getItem('ws_usuarios') || '[]');
+}
+
+function getSesion() {
+    return JSON.parse(localStorage.getItem('ws_sesion') || 'null');
+}
+
+function guardarSesion(usuario) {
+    localStorage.setItem('ws_sesion', JSON.stringify(usuario));
+}
+
+function abrirAuth() {
+    mostrarLogin();
+    document.getElementById('authOverlay').classList.add('active');
+    document.getElementById('authModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarAuth() {
+    document.getElementById('authOverlay').classList.remove('active');
+    document.getElementById('authModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function mostrarLogin() {
+    document.getElementById('panelLogin').style.display = 'block';
+    document.getElementById('panelRegistro').style.display = 'none';
+    document.getElementById('panelExito').style.display = 'none';
+    limpiarErrores();
+}
+
+function mostrarRegistro() {
+    document.getElementById('panelLogin').style.display = 'none';
+    document.getElementById('panelRegistro').style.display = 'block';
+    document.getElementById('panelExito').style.display = 'none';
+    limpiarErrores();
+}
+
+function limpiarErrores() {
+    ['loginError', 'registroError'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.textContent = ''; el.classList.remove('visible'); }
+    });
+}
+
+function mostrarError(id, msg) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove('visible');
+    void el.offsetWidth; // reflow para re-animar
+    el.classList.add('visible');
+}
+
+function iniciarSesion() {
+    const email    = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email || !password) {
+        mostrarError('loginError', '⚠️ Por favor completa todos los campos.');
+        return;
+    }
+
+    const usuarios = getUsuarios();
+    const usuario  = usuarios.find(u => u.email === email && u.password === password);
+
+    if (!usuario) {
+        mostrarError('loginError', '❌ Correo o contraseña incorrectos.');
+        return;
+    }
+
+    guardarSesion(usuario);
+    cerrarAuth();
+    actualizarUIUsuario(usuario);
+    mostrarNotificacion(`¡Bienvenido de vuelta, ${usuario.nombre}! 👋`);
+}
+
+function registrarse() {
+    const nombre   = document.getElementById('regNombre').value.trim();
+    const apellido = document.getElementById('regApellido').value.trim();
+    const email    = document.getElementById('regEmail').value.trim().toLowerCase();
+    const password = document.getElementById('regPassword').value;
+    const confirm  = document.getElementById('regConfirm').value;
+
+    if (!nombre || !apellido) {
+        mostrarError('registroError', '⚠️ Por favor ingresa tu nombre y apellido.');
+        return;
+    }
+    if (!email || !email.includes('@')) {
+        mostrarError('registroError', '⚠️ Ingresa un correo electrónico válido.');
+        return;
+    }
+    if (password.length < 6) {
+        mostrarError('registroError', '⚠️ La contraseña debe tener mínimo 6 caracteres.');
+        return;
+    }
+    if (password !== confirm) {
+        mostrarError('registroError', '❌ Las contraseñas no coinciden.');
+        return;
+    }
+
+    const usuarios = getUsuarios();
+    if (usuarios.find(u => u.email === email)) {
+        mostrarError('registroError', '❌ Ya existe una cuenta con ese correo.');
+        return;
+    }
+
+    const nuevoUsuario = { nombre, apellido, email, password };
+    usuarios.push(nuevoUsuario);
+    localStorage.setItem('ws_usuarios', JSON.stringify(usuarios));
+
+    // Mostrar panel de éxito
+    document.getElementById('panelRegistro').style.display = 'none';
+    document.getElementById('panelExito').style.display = 'block';
+}
+
+function cerrarSesion() {
+    localStorage.removeItem('ws_sesion');
+    cerrarUserMenu();
+    document.getElementById('userMenuWrap').style.display = 'none';
+    document.getElementById('btnLoginNav').style.display = 'flex';
+    mostrarNotificacion('Sesión cerrada. ¡Hasta pronto! 👋');
+    // Limpiar carrito al cerrar sesión
+    carrito = [];
+    actualizarCarrito();
+}
+
+function actualizarUIUsuario(usuario) {
+    const inicial = (usuario.nombre.charAt(0) + (usuario.apellido ? usuario.apellido.charAt(0) : '')).toUpperCase();
+    document.getElementById('userAvatar').textContent       = inicial;
+    document.getElementById('userDropAvatar').textContent   = inicial;
+    document.getElementById('userNameNav').textContent      = usuario.nombre;
+    document.getElementById('userDropName').textContent     = `${usuario.nombre} ${usuario.apellido}`;
+    document.getElementById('userDropEmail').textContent    = usuario.email;
+    document.getElementById('userMenuWrap').style.display   = 'flex';
+    document.getElementById('btnLoginNav').style.display    = 'none';
+}
+
+function toggleUserMenu() {
+    document.getElementById('userDropdown').classList.toggle('open');
+}
+
+function cerrarUserMenu() {
+    document.getElementById('userDropdown').classList.remove('open');
+}
+
+// Cerrar dropdown si se hace click fuera
+document.addEventListener('click', function(e) {
+    const wrap = document.getElementById('userMenuWrap');
+    if (wrap && !wrap.contains(e.target)) cerrarUserMenu();
+});
+
+// Fuerza de contraseña
+function evalFuerza(val) {
+    const bar   = document.getElementById('passBar');
+    const label = document.getElementById('passLabel');
+    if (!bar || !label) return;
+
+    let score = 0;
+    if (val.length >= 6)  score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const niveles = [
+        { pct: '0%',   color: 'transparent',  text: '' },
+        { pct: '25%',  color: '#ef4444',       text: '🔴 Muy débil' },
+        { pct: '50%',  color: '#f59e0b',       text: '🟡 Débil' },
+        { pct: '70%',  color: '#3b82f6',       text: '🔵 Regular' },
+        { pct: '90%',  color: '#10b981',       text: '🟢 Fuerte' },
+        { pct: '100%', color: '#059669',       text: '✅ Muy fuerte' },
+    ];
+
+    const n = niveles[Math.min(score, 5)];
+    bar.style.width      = val.length === 0 ? '0%' : n.pct;
+    bar.style.background = n.color;
+    label.textContent    = val.length === 0 ? '' : n.text;
+    label.style.color    = n.color;
+}
+
+// Mostrar / ocultar contraseña
+function togglePass(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon  = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type      = 'text';
+        icon.className  = 'fas fa-eye-slash';
+    } else {
+        input.type      = 'password';
+        icon.className  = 'fas fa-eye';
+    }
+}
+
+// Interceptar el botón "Agregar al carrito": exige login
+// (se sobreescribe la función original más abajo con este wrapper)
+function verificarLoginParaComprar() {
+    if (!getSesion()) {
+        abrirAuth();
+        return false;
+    }
+    return true;
+}
+
 // ========== DATOS DE PRODUCTOS CON IMÁGENES UNSPLASH Y DESCUENTOS ==========
 const productosPorDepartamento = {
     electronica: [
@@ -193,6 +402,11 @@ function formatearPrecio(precio) {
 
 // ========== FUNCIONES DEL CARRITO ==========
 function agregarAlCarrito(productoId, departamento) {
+    // Verificar que el usuario esté logueado
+    if (!verificarLoginParaComprar()) {
+        mostrarNotificacion('⚠️ Inicia sesión para agregar productos al carrito.');
+        return;
+    }
     const id = parseInt(productoId);
     const producto = productosPorDepartamento[departamento].find(p => parseInt(p.id) === id);
     if (!producto) return;
@@ -374,6 +588,18 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🛍️ Williams Store iniciada correctamente');
     console.log('👨‍💻 Desarrollador: José Eduardo Williams');
     console.log('🎓 Matrícula: 23-EISN-2-048');
+
+    // Restaurar sesión si existe
+    const sesionActiva = getSesion();
+    if (sesionActiva) {
+        actualizarUIUsuario(sesionActiva);
+    }
+
+    // Mostrar modal de login automáticamente al entrar si no hay sesión
+    // (comentar las 3 líneas de abajo si no quieres que aparezca automáticamente)
+    if (!sesionActiva) {
+        setTimeout(() => abrirAuth(), 600);
+    }
 
     document.getElementById('cartOverlay').addEventListener('click', toggleCarrito);
 
